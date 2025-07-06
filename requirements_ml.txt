@@ -1,0 +1,14 @@
+# ML Packages
+numpy
+pandas
+scikit-learn
+matplotlib
+pydantic
+httpx
+
+# Additional ML utilities
+torch>=2.1.0
+torchvision>=0.16.0
+scipy>=1.11.0
+seaborn>=0.12.2
+plotly>=5.17.0
