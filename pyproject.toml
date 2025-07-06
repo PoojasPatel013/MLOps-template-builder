@@ -1,0 +1,22 @@
+[build-system]
+requires = ["setuptools>=61.0", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "mlops-template-builder"
+version = "0.1.0"
+description = "Modern MLOps Project Template Builder"
+authors = [
+    { name="Pooja Patel", email="poojaspatel1375@gmail.com" }
+]
+requires-python = ">=3.9"
+
+[project.urls]
+"Homepage" = "https://github.com/PoojasPatel013/mlops-template-builder"
+
+[tool.setuptools]
+packages = ["mlops_template_builder"]
+
+[tool.setuptools.packages.find]
+where = ["src"]
+exclude = ["tests"]
