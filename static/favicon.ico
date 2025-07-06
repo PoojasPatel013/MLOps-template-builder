@@ -1,0 +1,20 @@
+from PIL import Image
+import numpy as np
+
+# Create a 16x16 image with a simple pattern
+size = 16
+img = Image.new('RGB', (size, size))
+
+# Create a simple pattern
+pixels = np.zeros((size, size, 3), dtype=np.uint8)
+for i in range(size):
+    for j in range(size):
+        # Create a simple checkerboard pattern
+        if (i + j) % 2 == 0:
+            pixels[i, j] = [0, 128, 255]  # Blue
+        else:
+            pixels[i, j] = [255, 255, 255]  # White
+
+# Save the image
+img = Image.fromarray(pixels)
+img.save('favicon.ico', format='ICO', sizes=[(16, 16)])
