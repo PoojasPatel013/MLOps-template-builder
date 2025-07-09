@@ -1,0 +1,12 @@
+{
+    "project_name": "",
+    "project_description": "",
+    "open_source_license": ["MIT", "Apache-2.0", "BSD-3-Clause", "GPL-3.0"],
+    "cloud_provider": ["AWS", "GCP", "Azure", "None"],
+    "experiment_tracker": ["MLflow", "TensorBoard", "WandB", "None"],
+    "python_version": ["3.8", "3.9", "3.10", "3.11"],
+    "include_docker": ["yes", "no"],
+    "include_ci": ["yes", "no"],
+    "include_tests": ["yes", "no"],
+    "include_notebooks": ["yes", "no"]
+}

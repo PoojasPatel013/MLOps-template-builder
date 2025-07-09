@@ -7,6 +7,20 @@
     <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
     <link href="/static/css/style.css" rel="stylesheet">
     <script defer src="https://unpkg.com/alpinejs@3.x.x/dist/cdn.min.js"></script>
+    <script>
+        // Request directory access permission
+        if ('showDirectoryPicker' in window) {
+            window.addEventListener('DOMContentLoaded', async () => {
+                try {
+                    const handle = await window.showDirectoryPicker();
+                    // Store the handle in a global variable
+                    window.selectedDirectory = handle;
+                } catch (err) {
+                    console.log('User cancelled directory picker or permission denied');
+                }
+            });
+        }
+    </script>
 </head>
 <body class="bg-gray-100">
     <div class="container mx-auto px-4 py-8">
@@ -15,6 +29,29 @@
         <div class="max-w-4xl mx-auto">
             <div class="bg-white rounded-lg shadow-md p-6 mb-6">
                 <form id="templateForm" class="space-y-6">
+                    <!-- Directory Selection -->
+                    <div>
+                        <h2 class="text-xl font-semibold mb-4">Project Location</h2>
+                        <div class="grid grid-cols-1 gap-4">
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700">Select Directory</label>
+                                <div class="mt-1 flex items-center space-x-2">
+                                    <input type="text" id="directoryPath" 
+                                           class="flex-1 rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500" 
+                                           placeholder="Select a directory to save your project..." readonly>
+                                    <input type="hidden" id="directoryPathHidden" name="target_directory" value="">
+                                    <button type="button" id="directoryPicker" 
+                                            class="px-4 py-2 bg-indigo-600 text-white rounded-md hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500">
+                                        <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
+                                        </svg>
+                                        Browse Directory
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
                     <!-- Project Info -->
                     <div>
                         <h2 class="text-xl font-semibold mb-4">Project Information</h2>
