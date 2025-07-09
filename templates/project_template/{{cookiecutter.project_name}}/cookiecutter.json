@@ -1,0 +1,12 @@
+{
+    "project_name": "{{ cookiecutter.project_name }}",
+    "project_description": "{{ cookiecutter.project_description }}",
+    "open_source_license": "{{ cookiecutter.open_source_license }}",
+    "cloud_provider": "{{ cookiecutter.cloud_provider }}",
+    "experiment_tracker": "{{ cookiecutter.experiment_tracker }}",
+    "python_version": "{{ cookiecutter.python_version }}",
+    "include_docker": "{{ cookiecutter.include_docker }}",
+    "include_ci": "{{ cookiecutter.include_ci }}",
+    "include_tests": "{{ cookiecutter.include_tests }}",
+    "include_notebooks": "{{ cookiecutter.include_notebooks }}"
+}

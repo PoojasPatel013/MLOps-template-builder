@@ -1,6 +1,7 @@
 from fastapi import FastAPI, Request, HTTPException
 from fastapi.templating import Jinja2Templates
 from fastapi.staticfiles import StaticFiles
+from fastapi.responses import FileResponse
 from pathlib import Path
 import json
 import shutil
@@ -12,10 +13,15 @@ app = FastAPI(title="MLOps Template Builder")
 # Mount static files
 app.mount("/static", StaticFiles(directory="static"), name="static")
 
+# Add favicon route
+@app.get("/favicon.ico")
+async def favicon():
+    return FileResponse("static/favicon.ico")
+
 templates = Jinja2Templates(directory="templates")
 
 # Load cookiecutter.json
-with open(Path(__file__).parent.parent / "templates" / "template" / "cookiecutter.json", "r") as f:
+with open(Path(__file__).parent.parent / "templates" / "project_template" / "{{cookiecutter.project_name}}" / "cookiecutter.json", "r") as f:
     config = json.load(f)
 
 @app.get("/")
