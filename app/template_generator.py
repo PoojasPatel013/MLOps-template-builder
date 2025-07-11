@@ -33,8 +33,9 @@ async def generate_template(config: Dict, target_directory: str) -> str:
         str: Path to the generated project directory
     
     Raises:
-        ValueError: If required configuration is missing or an error occurs during template generation
+        ValueError: If required configuration is missing or invalid
         OSError: If file operations fail
+        PermissionError: If insufficient permissions
     """
     try:
         logger.info(f"Starting template generation with config: {json.dumps(config, indent=2)}")
@@ -54,22 +55,76 @@ async def generate_template(config: Dict, target_directory: str) -> str:
         if not project_name:
             raise ValueError("Project name cannot be empty")
         
-        # Create project directory in target location
-        project_name = config['project_name']
+        # Clean up project name
+        project_name = config['project_name'].strip()
+        if not project_name:
+            raise ValueError("Project name cannot be empty")
+        
+        # Validate target directory
         target_path = Path(target_directory)
         if not target_path.exists():
             raise OSError(f"Target directory does not exist: {target_directory}")
-            
+        if not target_path.is_dir():
+            raise OSError(f"Target path is not a directory: {target_directory}")
+
+        # Create project directory
         project_dir = target_path / project_name
         
         if project_dir.exists():
             raise OSError(f"Project directory '{project_name}' already exists in {target_directory}")
             
         try:
-            project_dir.mkdir(exist_ok=True)
+            # Create project directory with proper permissions
+            project_dir.mkdir(parents=True, exist_ok=False)
             logger.info(f"Successfully created project directory at {project_dir}")
+            
+            # Get template directory
+            template_dir = Path(__file__).parent / "templates"
+            if not template_dir.exists():
+                raise OSError("Template directory not found")
+                
+            # Copy template files
+            for item in template_dir.iterdir():
+                if item.name == '{{cookiecutter.project_name}}':
+                    # Create temporary directory for processing
+                    temp_dir = project_dir / "_temp"
+                    temp_dir.mkdir(exist_ok=True)
+                    
+                    # Copy and process files
+                    async with aiofiles.threadpool.wrap(os.scandir)(item / '{{cookiecutter.project_name}}') as entries:
+                        async for subitem in entries:
+                            if subitem.is_dir():
+                                # Copy directories recursively
+                                shutil.copytree(subitem.path, temp_dir / subitem.name, dirs_exist_ok=True)
+                            else:
+                                # Process and copy files
+                                async with aiofiles.open(subitem.path, 'r') as f:
+                                    content = await f.read()
+                                content = content.replace('{{cookiecutter.project_name}}', project_name)
+                                async with aiofiles.open(temp_dir / subitem.name, 'w') as f:
+                                    await f.write(content)
+                    
+                    # Move processed files to project directory
+                    for item in temp_dir.iterdir():
+                        shutil.move(str(item), str(project_dir))
+                    shutil.rmtree(str(temp_dir))
+                    
+            # Generate additional files
+            await generate_additional_files(project_dir, config)
+            
+            return str(project_dir)
+            
+        except PermissionError as e:
+            logger.error(f"Permission error: {str(e)}")
+            raise PermissionError(f"Insufficient permissions to create project in {target_directory}")
+            
         except Exception as e:
             logger.error(f"Error creating project directory: {str(e)}")
+            if project_dir.exists():
+                try:
+                    shutil.rmtree(str(project_dir))
+                except:
+                    logger.error("Failed to clean up project directory")
             raise OSError(f"Failed to create project directory: {str(e)}")
 
         # Get the absolute path of the current file

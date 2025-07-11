@@ -42,6 +42,12 @@ mlops-template/
 └── infra/
 ```
 
+
+# Run the web app
+.\venv\Scripts\activate
+uvicorn app.main:app --reload
+
+
 ## License
 
 MIT

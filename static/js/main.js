@@ -1,29 +1,32 @@
 document.addEventListener('DOMContentLoaded', () => {
-    // Initialize Alpine.js
-    init();
-
     // Add directory picker button
     const directoryPickerBtn = document.getElementById('directoryPicker');
     const directoryPathInput = document.getElementById('directoryPath');
     const directoryPathHidden = document.getElementById('directoryPathHidden');
-    
+    const notifications = document.getElementById('notifications');
+
+    // Directory picker functionality
     if (directoryPickerBtn && directoryPathInput && directoryPathHidden) {
         directoryPickerBtn.addEventListener('click', async () => {
             try {
                 // Request permission for directory access
                 const handle = await window.showDirectoryPicker();
                 
-                // Store the directory handle
-                window.selectedDirectory = handle;
-                
-                // Get the absolute path
-                const fullPath = await handle.resolve();
-                
-                // Update both visible and hidden inputs
-                directoryPathInput.value = fullPath;
-                directoryPathHidden.value = fullPath;
-                
-                showNotification('success', 'Directory selected successfully');
+                if (handle) {
+                    // Store the directory handle
+                    window.selectedDirectory = handle;
+                    
+                    // Get the absolute path
+                    const fullPath = handle.fullPath || handle.name;
+                    
+                    // Update both visible and hidden inputs
+                    directoryPathInput.value = fullPath;
+                    directoryPathHidden.value = fullPath;
+                    
+                    showNotification('success', 'Directory selected successfully');
+                } else {
+                    showNotification('error', 'No directory selected');
+                }
             } catch (error) {
                 if (error.name === 'AbortError') {
                     // User cancelled the picker
@@ -56,14 +59,37 @@ document.addEventListener('DOMContentLoaded', () => {
             submitButton.disabled = true;
 
             try {
-                // Collect form data
+                // Get form data
                 const formData = new FormData(form);
-                const data = {};
-                for (let [key, value] of formData.entries()) {
-                    data[key] = value;
-                }
+                const data = Object.fromEntries(formData.entries());
+                
+                // Send request to server
+                const response = await fetch('/generate', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(data)
+                });
 
-                // The directory path is already included in the form data through the hidden input
+                const result = await response.json();
+                
+                if (response.ok) {
+                    showNotification('success', 'Template generated successfully!');
+                    showNotification('info', `Project created at: ${result.project_path}`);
+                } else {
+                    throw new Error(result.error || 'Failed to generate template');
+                }
+            } catch (error) {
+                showNotification('error', error.message || 'An error occurred');
+            } finally {
+                // Re-enable submit button
+                submitButton.innerHTML = originalText;
+                submitButton.disabled = false;
+            }
+        });
+    }
+});
 
                 // Send request
                 const response = await fetch('/generate', {
