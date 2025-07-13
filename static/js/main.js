@@ -17,7 +17,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     window.selectedDirectory = handle;
                     
                     // Get the absolute path
-                    const fullPath = handle.fullPath || handle.name;
+                    const fullPath = await handle.resolve();
                     
                     // Update both visible and hidden inputs
                     directoryPathInput.value = fullPath;
@@ -32,7 +32,11 @@ document.addEventListener('DOMContentLoaded', () => {
                     // User cancelled the picker
                     return;
                 }
-                showNotification('error', 'Failed to select directory: ' + error.message);
+                if (error.name === 'NotAllowedError') {
+                    showNotification('error', 'Permission denied to access directory. Please allow access in browser settings.');
+                } else {
+                    showNotification('error', 'Failed to select directory: ' + error.message);
+                }
             }
         });
     }
@@ -89,18 +93,7 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         });
     }
-});
-
-                // Send request
-                const response = await fetch('/generate', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
-                    body: JSON.stringify(data)
-                });
-
-                const result = await response.json();
+    const result = response.json();
                 
                 if (response.ok) {
                     // Success case
@@ -116,16 +109,8 @@ document.addEventListener('DOMContentLoaded', () => {
                     const errorMessage = result.error || 'Failed to generate template';
                     showNotification(errorMessage, false);
                 }
-            } catch (error) {
-                showNotification(error.message || 'An error occurred', false);
-            } finally {
-                if (submitButton) {
-                    submitButton.innerHTML = originalText;
-                    submitButton.disabled = false;
-                }
             }
-        });
-    }
+        );
 
     // Update preview when form changes
     form.addEventListener('input', updatePreview);
@@ -139,7 +124,6 @@ document.addEventListener('DOMContentLoaded', () => {
             });
         });
     });
-});
 
 // Notification handling
 function showNotification(message, isSuccess) {

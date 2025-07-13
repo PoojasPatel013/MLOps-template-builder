@@ -7,17 +7,9 @@
     <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
     <link href="/static/css/style.css" rel="stylesheet">
     <script>
-        // Request directory access permission
-        if ('showDirectoryPicker' in window) {
-            window.addEventListener('DOMContentLoaded', async () => {
-                try {
-                    const handle = await window.showDirectoryPicker();
-                    // Store the handle in a global variable
-                    window.selectedDirectory = handle;
-                } catch (err) {
-                    console.log('User cancelled directory picker or permission denied');
-                }
-            });
+        // Check if directory picker is supported
+        if (!('showDirectoryPicker' in window)) {
+            console.log('Directory picker not supported in this browser');
         }
     </script>
 </head>
