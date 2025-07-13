@@ -1,12 +1,12 @@
-from fastapi import FastAPI, Request, HTTPException
+from fastapi import FastAPI, HTTPException, Request
 from fastapi.templating import Jinja2Templates
 from fastapi.staticfiles import StaticFiles
-from fastapi.responses import FileResponse
+from fastapi.responses import HTMLResponse, FileResponse
 from pathlib import Path
 import json
 import shutil
 import logging
-from typing import Dict
+from typing import Dict, Any
 from .template_generator import generate_template
 
 # Set up logging
@@ -23,6 +23,7 @@ app.mount("/static", StaticFiles(directory="static"), name="static")
 async def favicon():
     return FileResponse("static/favicon.ico")
 
+# Templates
 templates = Jinja2Templates(directory="templates")
 
 # Load cookiecutter.json
@@ -37,14 +38,8 @@ except Exception as e:
     )
 
 @app.get("/")
-async def root(request: Request):
-    return templates.TemplateResponse(
-        "index.html",
-        {
-            "request": request,
-            "config": config
-        }
-    )
+async def read_root(request: Request):
+    return templates.TemplateResponse("index.html", {"request": request, "config": config})
 
 @app.post("/generate")
 async def handle_template_generation(request: Request):
@@ -78,26 +73,34 @@ async def handle_template_generation(request: Request):
             )
 
         try:
-            # Generate the template in the specified directory
+            # Generate the template
             project_path = await generate_template(data, target_directory)
             logger.info(f"Template generated successfully at: {project_path}")
             
             return {
                 "message": "Template generated successfully",
-                "project_path": str(project_path)
+                "project_path": str(project_path),
+                "success": True
             }
         except Exception as e:
-            logger.error(f"Error generating template: {str(e)}")
-            raise
+            logger.error(f"Error generating template: {str(e)}", exc_info=True)
+            raise HTTPException(
+                status_code=500,
+                detail={
+                    "error": f"Failed to generate template: {str(e)}",
+                    "details": str(e)
+                }
+            )
+
     except HTTPException as e:
-        logger.error(f"HTTP Exception: {str(e)}")
+        logger.error(f"HTTP error: {str(e)}")
         raise e
     except Exception as e:
-        logger.error(f"Unexpected error: {str(e)}")
+        logger.error(f"Unexpected error: {str(e)}", exc_info=True)
         raise HTTPException(
             status_code=500,
             detail={
-                "error": f"An unexpected error occurred: {str(e)}",
+                "error": "An unexpected error occurred",
                 "details": str(e)
             }
         )
