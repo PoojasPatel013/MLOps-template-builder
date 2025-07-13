@@ -42,7 +42,6 @@ setup(
     packages=find_packages(),
     cmdclass={'install': CustomInstallCommand},
     install_requires=[
-        # These will be handled by our custom install
         "cookiecutter>=2.3.0",
         "pyyaml>=6.0.1",
         "jinja2>=3.1.2",

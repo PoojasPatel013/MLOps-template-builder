@@ -7,7 +7,6 @@
     <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
     <link href="/static/css/style.css" rel="stylesheet">
     <script>
-        // Check if directory picker is supported
         if (!('showDirectoryPicker' in window)) {
             console.log('Directory picker not supported in this browser');
         }
@@ -20,7 +19,6 @@
         <div class="max-w-4xl mx-auto">
             <div class="bg-white rounded-lg shadow-md p-6 mb-6">
                 <form id="templateForm" class="space-y-6">
-                    <!-- Directory Selection -->
                     <div>
                         <h2 class="text-xl font-semibold mb-4">Project Location</h2>
                         <div class="grid grid-cols-1 gap-4">
@@ -43,7 +41,6 @@
                         </div>
                     </div>
 
-                    <!-- Project Info -->
                     <div>
                         <h2 class="text-xl font-semibold mb-4">Project Information</h2>
                         <div class="grid grid-cols-1 gap-4">
@@ -62,11 +59,9 @@
                         </div>
                     </div>
 
-                    <!-- Configuration Options -->
                     <div>
                         <h2 class="text-xl font-semibold mb-4">Project Configuration</h2>
                         <div class="grid grid-cols-2 gap-6">
-                            <!-- License -->
                             <div>
                                 <label class="block text-sm font-medium text-gray-700">License</label>
                                 <select name="open_source_license" 
@@ -78,7 +73,6 @@
                                 </select>
                             </div>
 
-                            <!-- Cloud Provider -->
                             <div>
                                 <label class="block text-sm font-medium text-gray-700">Cloud Provider</label>
                                 <select name="cloud_provider" 
@@ -90,7 +84,6 @@
                                 </select>
                             </div>
 
-                            <!-- Experiment Tracker -->
                             <div>
                                 <label class="block text-sm font-medium text-gray-700">Experiment Tracker</label>
                                 <select name="experiment_tracker" 
@@ -102,7 +95,6 @@
                                 </select>
                             </div>
 
-                            <!-- Python Version -->
                             <div>
                                 <label class="block text-sm font-medium text-gray-700">Python Version</label>
                                 <select name="python_version" 
@@ -115,7 +107,6 @@
                         </div>
                     </div>
 
-                    <!-- Feature Toggles -->
                     <div>
                         <h2 class="text-xl font-semibold mb-4">Features</h2>
                         <div class="grid grid-cols-2 gap-6">
@@ -142,17 +133,14 @@
                         </div>
                     </div>
 
-                    <!-- Submit Button -->
-                    <div class="pt-4">
+                    <div class="flex justify-end">
                         <button type="submit" 
-                                class="w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
+                                class="px-6 py-2 bg-indigo-600 text-white rounded-md hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500">
                             Generate Template
                         </button>
                     </div>
                 </form>
             </div>
-
-            <!-- Template Preview -->
             <div id="templatePreview" class="bg-white rounded-lg shadow-md p-6 hidden">
                 <h2 class="text-xl font-semibold mb-4">Template Preview</h2>
                 <div class="space-y-4">
@@ -185,9 +173,10 @@
         </div>
     </div>
 
+    <div id="notifications" class="fixed bottom-4 right-4 z-50"></div>
+
     <script src="/static/js/main.js"></script>
     <script>
-        // Alpine.js data
         document.addEventListener('alpine:init', () => {
             Alpine.data('templatePreview', () => ({
                 form: null,

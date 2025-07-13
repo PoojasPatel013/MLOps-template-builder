@@ -6,7 +6,6 @@ python-dotenv>=1.0.0
 black>=23.7.0
 pytest>=7.4.0
 
-# ML packages with specific versions
 numpy
 pandas
 scikit-learn
@@ -23,7 +22,6 @@ starlette
 pydantic
 httpx
 
-# Additional packages
 fastapi>=0.104.1
 uvicorn>=0.24.0
 bentoml>=1.0.22

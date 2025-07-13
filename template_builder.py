@@ -14,15 +14,14 @@ class MLOpsTemplateBuilder:
             "project_description": "",
             "author_name": "",
             "author_email": "",
-            "cloud_provider": "",  # aws, azure, gcp, local
-            "experiment_tracker": "",  # mlflow, wandb, neptune
-            "ci_provider": "",  # github, gitlab
+            "cloud_provider": "", 
+            "experiment_tracker": "", 
+            "ci_provider": "", 
             "python_version": "3.9",
             "license": "MIT",
         }
 
     def prompt_user(self) -> Dict[str, Any]:
-        """Prompt user for project configuration."""
         print("\nWelcome to the MLOps Project Template Builder!\n")
         
         for key in self.context:
@@ -36,7 +35,6 @@ class MLOpsTemplateBuilder:
         return self.context
 
     def get_choices(self, field: str) -> list:
-        """Get available choices for specific fields."""
         choices = {
             "cloud_provider": ["aws", "azure", "gcp", "local"],
             "experiment_tracker": ["mlflow", "wandb", "neptune"],
@@ -45,11 +43,7 @@ class MLOpsTemplateBuilder:
         return choices.get(field, [])
 
     def create_template(self, output_dir: str = "."):
-        """Create the MLOps project template."""
-        # Create template directory if it doesn't exist
         self.template_dir.mkdir(exist_ok=True)
-        
-        # Generate project using cookiecutter
         cookiecutter(
             str(self.template_dir),
             no_input=True,
@@ -58,7 +52,6 @@ class MLOpsTemplateBuilder:
         )
 
     def generate(self):
-        """Generate the MLOps project template."""
         self.context = self.prompt_user()
         self.create_template()
 
